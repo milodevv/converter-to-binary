@@ -1,7 +1,6 @@
 import math
 from lists_of_values import ListsOfValues
 import time
-import inspect
 
 class ConvertToBinary():
     count = 0
@@ -10,22 +9,20 @@ class ConvertToBinary():
     def __init__(self):
         pass
     
-    def values_to_convert(self, number: int):
+    def values_to_convert(self, number: int, origin: str = None) -> list:
         self.lists.numbers.clear()
-        stack = inspect.stack()
-        caller = stack[1].function
         while number >= 1:
             self.count += 1
             self.lists.numbers.append(number)
             number /= 2
             number = math.trunc(number)
         new_list = self.lists.numbers.copy()
-        if caller == 'converter_of_sentence':
+        if origin == 'converter_of_sentence':
             self.lists.numbers_copy.append(new_list)
         new_list.reverse()
         return new_list
 
-    def converter_of_number(self, number: int):
+    def converter_of_number(self, number: int) -> list:
         self.lists.numbers.clear()
         if number <= 0:
             return 0
@@ -38,7 +35,7 @@ class ConvertToBinary():
                 binary_numbers.append(0) if number % 2 == 0 else binary_numbers.append(1)
             return binary_numbers
 
-    def converter_of_character(self, char: str):
+    def converter_of_character(self, char: str) -> list:
         number_decimal = self.lists.characs_value[char]
         new_list = self.values_to_convert(number_decimal)
         binary_numbers = []
@@ -46,13 +43,13 @@ class ConvertToBinary():
             binary_numbers.append(0) if number % 2 == 0 else binary_numbers.append(1)
         return binary_numbers
 
-    def converter_of_sentence(self, sentence: str):
+    def converter_of_sentence(self, sentence: str) -> list:
         self.lists.numbers_copy.clear()
         new_list = []
         binary_numbers = []
         for word in sentence:
             number_decimal = self.lists.characs_value[word]
-            new_list.append(self.values_to_convert(number_decimal))
+            new_list.append(self.values_to_convert(number_decimal, origin='converter_of_sentence'))
         for row in new_list:
             for item in row:
                 binary_numbers.append(0) if item % 2 == 0 else binary_numbers.append(1)
@@ -72,35 +69,44 @@ while execution:
         match option:
             case 1:
                 number = int(input('Numero a convertir: '))
-                print(f'\nNumero ({number}) en binario: {converter.converter_of_number(number)}\nValores de la operacion {converter.lists.numbers}\nSe realizaron {converter.count} llamadas\n')
-                response = str(input('Desea continuar?: '))
-                if not converter.validate_response(response):
-                    break
-                else: continue
+                if not isinstance(number, int):
+                    raise TypeError('Tipo de dato no valido')
+                else:
+                    print(f'\nNumero ({number}) en binario: {converter.converter_of_number(number)}\nValores de la operacion {converter.lists.numbers}\nSe realizaron {converter.count} llamadas\n')
+                    response = str(input('Desea continuar?: '))
+                    if not converter.validate_response(response):
+                        break
+                    else: continue
 
             case 2:
                 charac = str(input('Caracter a convertir: '))
-                if len(charac) > 1:
-                    print('Debe digitar un solo caracter')
-                    time.sleep(2)
+                if not isinstance(charac, str):
+                    raise TypeError('Tipo de dato no valido')
                 else:
-                    print(f'\nCaracter ({charac}) en bimario: {converter.converter_of_character(charac)}\nValores de la operacion {converter.lists.numbers}\nSe realizaron {converter.count} llamadas\n')
-                    response = str(input('Desea continuar?: '))
-                    if not converter.validate_response(response):
-                        break
-                    else: continue
+                    if len(charac) > 1:
+                        print('Debe digitar un solo caracter')
+                        time.sleep(2)
+                    else:
+                        print(f'\nCaracter ({charac}) en bimario: {converter.converter_of_character(charac)}\nValores de la operacion {converter.lists.numbers}\nSe realizaron {converter.count} llamadas\n')
+                        response = str(input('Desea continuar?: '))
+                        if not converter.validate_response(response):
+                            break
+                        else: continue
 
             case 3:
                 sentence = str(input('Oracion a convertir: '))
-                if 'ñ' in sentence:
-                    print('La letra "ñ" no cuenta con numeracion decimal')
-                    time.sleep(2)
+                if not isinstance(sentence, str):
+                    raise TypeError('Tipo de dato no valido')
                 else:
-                    print(f'\nOracion ({sentence}) en binario {converter.converter_of_sentence(sentence)}\nValores de la operacion {converter.lists.numbers_copy}\nSe realizaron {converter.count} llamadas\n')
-                    response = str(input('Desea continuar?: '))
-                    if not converter.validate_response(response):
-                        break
-                    else: continue
+                    if 'ñ' in sentence:
+                        print('La letra "ñ" no cuenta con numeracion decimal')
+                        time.sleep(2)
+                    else:
+                        print(f'\nOracion ({sentence}) en binario: {converter.converter_of_sentence(sentence)}\nValores de la operacion: {converter.lists.numbers_copy}\nSe realizaron {converter.count} llamadas\n')
+                        response = str(input('Desea continuar?: '))
+                        if not converter.validate_response(response):
+                            break
+                        else: continue
 
             case 4:
                 break
